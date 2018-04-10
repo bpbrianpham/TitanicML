@@ -66,6 +66,34 @@ def accuracy(x, y, w):
     accuracy = correctlyClassified/len(y)*100;
     return accuracy;
 
+#Use for testing the training and testing processes of a model
+def train_test_a_model(modelname, train_data, train_label, test_data, test_label, max_iter, learning_rate):
+    print(modelname+" testing...")
+    # max iteration test cases 
+    for i, m_iter in enumerate(max_iter):
+        w = logistic_regression(train_data, train_label, m_iter, learning_rate[1])
+        Ain, Aout = accuracy(train_data, train_label, w), accuracy(test_data, test_label, w)
+        print("max iteration testcase%d: Train accuracy: %f, Test accuracy: %f"%(i, Ain, Aout))
+    # learning rate test cases
+    for i, l_rate in enumerate(learning_rate):
+        w = logistic_regression(train_data, train_label, max_iter[3], l_rate)
+        Ain, Aout = accuracy(train_data, train_label, w), accuracy(test_data, test_label, w)
+        print("learning rate testcase%d: Train accuracy: %f, Test accuracy: %f"%(i, Ain, Aout))
+    print(modelname+" test done.")
+    
+def test_logistic_regression():
+    max_iter = [100, 200, 500,1000]
+    learning_rate = [0.1, 0.2, 0.5]
+    traindataloc,testdataloc = "../data/train.txt", "../data/test.txt"
+    train_data,train_label = load_features(traindataloc)
+    test_data, test_label = load_features(testdataloc)
+    train_test_a_model("logistic regression", train_data, train_label, test_data, test_label, max_iter, learning_rate)
+    try:
+        train_test_a_model("logistic regression", train_data, train_label, test_data, test_label, max_iter, learning_rate)
+    except:
+        print("Please finish logistic_regression() and cross_entropy_error() functions \n\
+				before you run the test_logistic_regression() function.\n")
+
 if __name__ == '__main__':
     trainData = read_data("../Data/train.csv")
     print(trainData['PassengerID'])

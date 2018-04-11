@@ -84,7 +84,7 @@ def train_test_a_model(modelname, train_data, train_label, test_data, test_label
 def test_logistic_regression():
     max_iter = [100, 200, 500,1000]
     learning_rate = [0.1, 0.2, 0.5]
-    traindataloc,testdataloc = "../data/train.txt", "../data/test.txt"
+    traindataloc,testdataloc = "../Data/train.csv", "../Data/test.csv"
     train_data,train_label = load_features(traindataloc)
     test_data, test_label = load_features(testdataloc)
     train_test_a_model("logistic regression", train_data, train_label, test_data, test_label, max_iter, learning_rate)
@@ -95,5 +95,5 @@ def test_logistic_regression():
 				before you run the test_logistic_regression() function.\n")
 
 if __name__ == '__main__':
-    trainData = read_data("../Data/train.csv")
+    test_logistic_regression()
     print(trainData['PassengerID'])

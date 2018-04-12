@@ -24,8 +24,10 @@ def logistic_regression(data, label, max_iter, learning_rate):
     gradient = 0;
     
     for i in range(max_iter):
+        #pick 64 entries then update gradient
         for j in range(len(label)):
             gradient += (data[j]*label[j])/(1 + np.exp(label[j]*np.transpose(w)*data[j]));
+            #print(gradient)
         gradient = -gradient/len(label);
         w = w - learning_rate*gradient;
     return w;
@@ -57,9 +59,11 @@ def accuracy(x, y, w):
         if (prediction > 0.50):
             classification = 1;
         else:
-            classification = -1;
+            classification = 0;
         
         #if labeled correctly, +1
+        #print(classification)
+        #print(y[i])
         if (classification == y[i]):
             correctlyClassified += 1;
     
@@ -73,18 +77,19 @@ def train_test_a_model(modelname, train_data, train_label, test_data, test_label
     for i, m_iter in enumerate(max_iter):
         w = logistic_regression(train_data, train_label, m_iter, learning_rate[1])
         Ain, Aout = accuracy(train_data, train_label, w), accuracy(test_data, test_label, w)
-        print("max iteration testcase%d: Train accuracy: %f, Test accuracy: %f"%(i, Ain, Aout))
+        print("max iteration testcase%d: Train accuracy: %f"%(i, Ain))
     # learning rate test cases
     for i, l_rate in enumerate(learning_rate):
-        w = logistic_regression(train_data, train_label, max_iter[3], l_rate)
+        w = logistic_regression(train_data, train_label, max_iter[2], l_rate)
         Ain, Aout = accuracy(train_data, train_label, w), accuracy(test_data, test_label, w)
-        print("learning rate testcase%d: Train accuracy: %f, Test accuracy: %f"%(i, Ain, Aout))
-    print(modelname+" test done.")
+        print("learning rate testcase%d: Train accuracy: %f"%(i, Ain))
+    print(modelname+" training done.")
     
 def test_logistic_regression():
     max_iter = [100, 200, 500,1000]
     learning_rate = [0.1, 0.2, 0.5]
-    traindataloc,testdataloc = "../Data/train.csv", "../Data/test.csv"
+    traindataloc = "../data/train.csv"
+    testdataloc = "../data/test.csv"
     train_data,train_label = load_features(traindataloc)
     test_data, test_label = load_features(testdataloc)
     train_test_a_model("logistic regression", train_data, train_label, test_data, test_label, max_iter, learning_rate)
@@ -95,5 +100,27 @@ def test_logistic_regression():
 				before you run the test_logistic_regression() function.\n")
 
 if __name__ == '__main__':
-    test_logistic_regression()
-    print(trainData['PassengerID'])
+    max_iter = [100, 200, 500]
+    learning_rate = [0.1, 0.2, 0.5]
+    
+    df = pd.read_csv("../data/train.csv")
+    df.replace("male", 1, inplace=True)
+    df.replace("female", 0, inplace=True)
+    #df.replace(np.nan, 0, inplace=True)
+    trainData = df.as_matrix(columns=["Pclass", "Sex", "Age", "Parch", "Fare"] )
+    trainLabel = df.as_matrix(columns=["Survived"]).astype(float)
+    
+    df2 = pd.read_csv("../data/test.csv")
+    df2.replace("male", 1, inplace=True)
+    df2.replace("female", 0, inplace=True)
+    #df2.replace(np.nan, 0, inplace=True)
+    testData = df2.as_matrix(columns=["Pclass", "Sex", "Age", "Parch", "Fare"] )
+    
+    df3 = pd.read_csv("../data/gender_submission.csv")
+    testLabel = df3.as_matrix(columns=["Survived"]).astype(float)
+    train_test_a_model("logistic regression", trainData, trainLabel, testData, testLabel, max_iter, learning_rate)
+    
+    print("Testing model with test data")
+    test_weights = logistic_regression(testData, testLabel, max_iter[0], learning_rate[0])
+    test_acc = accuracy(testData, testLabel, test_weights)
+    print("Test accuracy:", test_acc)

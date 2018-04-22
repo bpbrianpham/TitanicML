@@ -3,7 +3,7 @@ from __future__ import print_function
 """
 Created on Thu Apr 12 17:04:28 2018
 
-@author: Brian
+@author: Andrew, Brian, Matthew
 """
 
 '''

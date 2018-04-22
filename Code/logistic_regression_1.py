@@ -2,7 +2,7 @@
 """
 Created on Thu Apr  5 16:59:45 2018
 
-@author: Matthew
+@author: Andrew, Brian, Matthew
 """
 from helper import *
 

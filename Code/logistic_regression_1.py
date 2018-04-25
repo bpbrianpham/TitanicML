@@ -9,11 +9,13 @@ Created on Thu Apr  5 16:59:45 2018
 #from sklearn.metrics import classification_report
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Dropout
-from keras.optimizers import SGD, rmsprop
+from keras.optimizers import SGD, rmsprop, Adam
 from keras.utils import np_utils
 import numpy as np
 import pandas as pd
 import pdb
+
+import matplotlib.pyplot as plt
 
 def load_data(filepath):
     df = pd.read_csv(filepath)
@@ -23,9 +25,9 @@ def load_data(filepath):
     df.replace("female", 0, inplace=True)
     
     df["Age"] = df[["Age", "Pclass"]].apply(impute_age, axis=1)
-    df["Age"] = normalize(df["Age"])
-    df["Fare"] = normalize(df["Fare"])
-    df["SibSp"] = normalize(df["SibSp"])
+    #df["Age"] = normalize(df["Age"])
+    #df["Fare"] = normalize(df["Fare"])
+    #df["SibSp"] = normalize(df["SibSp"])
     
     
     #turn embarked into 0s and 1s
@@ -65,18 +67,28 @@ if __name__ == '__main__':
     
     #pdb.set_trace()
     model = Sequential()
-    model.add(Dense(5, input_shape=(8,)))
-    model.add(Dropout(0.25))
-    model.add(Dense(2))
-    model.add(Activation("softmax"))
+    #model.add(Dense(1, input_shape=(8,)))
+    #model.add(Dropout(0.25))
+    #model.add(Dense(2))
+    model.add(Dense(2, activation="softmax", input_shape=(8,)))
     #model.summary()
     #opt = SGD()
-    opt = rmsprop(lr=0.0001, decay=1e-6)
+    opt = Adam()
+    #opt = rmsprop(lr=0.0001, decay=1e-4)
     
     model.compile(loss="binary_crossentropy", optimizer=opt, metrics=["accuracy"])
     passenger_cat = np_utils.to_categorical(trainLabel)
-    model.fit(trainData, passenger_cat, shuffle=True, epochs=20, steps_per_epoch=200)
-
+    history = model.fit(trainData, passenger_cat, shuffle=True, epochs=8, steps_per_epoch=891)
+    
+    loss = history.history['loss']
+    epochs = range(1, len(loss) + 1)
+    plt.plot(epochs, loss, 'bo', label='Training loss')
+    plt.title('Training')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.show()
+    
     df2 = load_data("../Data/test.csv")
     testData = df2.as_matrix(columns=["Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Q", "S"] )
     

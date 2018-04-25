@@ -8,11 +8,12 @@ Created on Thu Apr  5 16:59:45 2018
 #from sklearn.linear_model import LogisticRegression
 #from sklearn.metrics import classification_report
 from keras.models import Sequential
-from keras.layers import Dense, Activation
-from keras.optimizers import SGD
+from keras.layers import Dense, Activation, Dropout
+from keras.optimizers import SGD, rmsprop
 from keras.utils import np_utils
 import numpy as np
 import pandas as pd
+import pdb
 
 def load_data(filepath):
     df = pd.read_csv(filepath)
@@ -22,6 +23,10 @@ def load_data(filepath):
     df.replace("female", 0, inplace=True)
     
     df["Age"] = df[["Age", "Pclass"]].apply(impute_age, axis=1)
+    df["Age"] = normalize(df["Age"])
+    df["Fare"] = normalize(df["Fare"])
+    df["SibSp"] = normalize(df["SibSp"])
+    
     
     #turn embarked into 0s and 1s
     embark = pd.get_dummies(df["Embarked"], drop_first=True)
@@ -31,6 +36,9 @@ def load_data(filepath):
     df.head()
     
     return df
+
+def normalize(series):
+    return (series - series.min()) / (series.max() - series.min())
 
 def impute_age(cols):
     Age = cols[0]
@@ -48,26 +56,31 @@ def impute_age(cols):
 
 
 if __name__ == '__main__':
-    df = load_data("../data/train.csv")
+    df = load_data("../Data/train.csv")
     
 #    df.drop(["Name", "PassengerId"], axis = 1, inplace=True)
     
     trainData = df.as_matrix(columns=["Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Q", "S"] )
     trainLabel = df.as_matrix(columns=["Survived"]).astype(float)
     
+    #pdb.set_trace()
     model = Sequential()
-    model.add(Dense(2, input_shape=(8,)))
+    model.add(Dense(5, input_shape=(8,)))
+    model.add(Dropout(0.25))
+    model.add(Dense(2))
     model.add(Activation("softmax"))
-    sgd = SGD()
+    #model.summary()
+    #opt = SGD()
+    opt = rmsprop(lr=0.0001, decay=1e-6)
     
-    model.compile(loss="categorical_crossentropy", optimizer=sgd, metrics=["accuracy"])
+    model.compile(loss="binary_crossentropy", optimizer=opt, metrics=["accuracy"])
     passenger_cat = np_utils.to_categorical(trainLabel)
-    model.fit(trainData, passenger_cat, epochs=20)
+    model.fit(trainData, passenger_cat, shuffle=True, epochs=20, steps_per_epoch=200)
 
-    df2 = load_data("../data/test.csv")
+    df2 = load_data("../Data/test.csv")
     testData = df2.as_matrix(columns=["Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Q", "S"] )
     
-    df3 = pd.read_csv("../data/gender_submission.csv")
+    df3 = pd.read_csv("../Data/gender_submission.csv")
     testLabel = df3.as_matrix(columns=["Survived"]).astype(float)
     test_cat = np_utils.to_categorical(testLabel)
     

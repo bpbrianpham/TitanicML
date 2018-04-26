@@ -22,3 +22,21 @@ def load_data(filepath):
     df.head()
     
     return df
+
+def impute_age(cols):
+    Age = cols[0]
+    Pclass = cols[1]
+    
+    if pd.isnull(Age):
+        if Pclass == 1:
+            return 39.159930
+        elif Pclass == 2:
+            return 29.506705
+        else:
+            return 24.816367
+    else:
+        return Age
+
+if __name__ == '__main__':
+    df = load_data("../Data/train.csv")
+    

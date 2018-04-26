@@ -4,6 +4,14 @@ Created on Tue Apr 24 16:31:58 2018
 
 @author: Andrew, Brian, Matthew
 """
+from keras.models import Sequential
+from keras.layers import Dense, Activation, Dropout
+from keras.optimizers import SGD, rmsprop, Adam
+from keras.utils import np_utils
+import numpy as np
+import pandas as pd
+import pdb
+
 
 def load_data(filepath):
     df = pd.read_csv(filepath)
@@ -39,4 +47,5 @@ def impute_age(cols):
 
 if __name__ == '__main__':
     df = load_data("../Data/train.csv")
+        
     

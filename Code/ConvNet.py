@@ -4,13 +4,20 @@ Created on Tue Apr 24 16:31:58 2018
 
 @author: Andrew, Brian, Matthew
 """
+import keras
+from keras.datasets import mnist
 from keras.models import Sequential
-from keras.layers import Dense, Activation, Dropout
+from keras.layers import Dense, Dropout, Flatten, Activation
+from keras.layers import Conv2D, MaxPooling2D
+from keras import backend as K
 from keras.optimizers import SGD, rmsprop, Adam
 from keras.utils import np_utils
 import numpy as np
 import pandas as pd
 import pdb
+
+
+K.tensorflow_backend._get_available_gpus()
 
 
 def load_data(filepath):
@@ -48,4 +55,32 @@ def impute_age(cols):
 if __name__ == '__main__':
     df = load_data("../Data/train.csv")
         
+    batch_size = 200
+    num_classes = 10
+    epochs = 20
+    
+    trainData = df.as_matrix(columns=["Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Q", "S"] )
+    trainLabel = df.as_matrix(columns=["Survived"]).astype(float)
+    
+    model = Sequential()
+    model.add(Conv2D(32, kernel_size=(3, 3),
+                 activation='relu',
+                 input_shape=input_shape))
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     

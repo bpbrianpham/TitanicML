@@ -61,6 +61,7 @@ if __name__ == '__main__':
     
     trainData = df.as_matrix(columns=["Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Q", "S"] )
     trainLabel = df.as_matrix(columns=["Survived"]).astype(float)
+    input_shape = (8,)
     
     model = Sequential()
     model.add(Conv2D(32, kernel_size=(3, 3),

@@ -68,25 +68,7 @@ if __name__ == '__main__':
 #    df.drop(["Name", "PassengerId"], axis = 1, inplace=True)
     
     trainData = df.as_matrix(columns=["Pclass", "Sex", "Age", "SibSp", "Parch", "Q", "S"] )
-    trainLabel = df.as_matrix(columns=["Survived"]).astype(float)
-    '''
-    logreg=LogisticRegression()
-    logreg.fit(trainData,trainLabel)
-    
-    df2 = load_data("../Data/test.csv")
-    testData = df2.as_matrix(columns=["Pclass", "Sex", "Age", "SibSp", "Parch", "Q", "S"] )
-    #pdb.set_trace()
-    
-    df3 = pd.read_csv("../Data/gender_submission.csv")
-    testLabel = df3.as_matrix(columns=["Survived"]).astype(float)
-    test_cat = np_utils.to_categorical(testLabel)
-    
-    prediction=logreg.predict(testData)
-    
-    score=logreg.score(testData,test_cat)
-    print(score)
-    '''
-    
+    trainLabel = df.as_matrix(columns=["Survived"]).astype(float)  
     
     #pdb.set_trace()
     model = Sequential()

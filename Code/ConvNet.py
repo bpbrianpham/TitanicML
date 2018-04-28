@@ -8,6 +8,7 @@ Created on Thu Apr  5 16:59:45 2018
 #from sklearn.metrics import classification_report
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Dropout
+from keras.layers import Conv2D, Flatten
 from keras.optimizers import SGD, rmsprop, Adam
 from keras.utils import np_utils
 import numpy as np
@@ -59,33 +60,20 @@ def impute_age(cols):
 if __name__ == '__main__':
     #pre-processing Titanic training data
     df = load_data("../Data/train.csv")
-#    df.drop(["Name", "PassengerId"], axis = 1, inplace=True)
     trainData = df.as_matrix(columns=["Pclass", "Sex", "Age", "SibSp", "Fare", "Parch", "Q", "S"] )
     trainLabel = df.as_matrix(columns=["Survived"]).astype(float)
     
     #pdb.set_trace()
     model = Sequential()
-    #model.add(Dense(1, input_shape=(8,)))
-    #model.add(Dropout(0.25))
-    #model.add(Dense(2))
-    model.add(Dense(2, activation="softmax", input_shape=(8,)))
-    #model.summary()
-    #opt = SGD()
-    opt = Adam()
-    #opt = rmsprop(lr=0.0001, decay=1e-4)
+    model.add(Dense(units=6, kernel_initializer='uniform', activation='relu',input_dim=8))
+    model.add(Dropout(0.2))
+    model.add(Dense(units=6, kernel_initializer='uniform', activation='relu'))
+    model.add(Dropout(0.2))
+    model.add(Dense(units=2, kernel_initializer='uniform', activation='sigmoid'))
+    model.compile(loss="binary_crossentropy", optimizer='adam', metrics=["accuracy"])
     
-    model.compile(loss="binary_crossentropy", optimizer=opt, metrics=["accuracy"])
     passenger_cat = np_utils.to_categorical(trainLabel)
-    history = model.fit(trainData, passenger_cat, shuffle=True, epochs=8, steps_per_epoch=891)
-    
-    loss = history.history['loss']
-    epochs = range(1, len(loss) + 1)
-    plt.plot(epochs, loss, 'bo', label='Training loss')
-    plt.title('Training')
-    plt.xlabel('Epochs')
-    plt.ylabel('Loss')
-    plt.legend()
-    plt.show()
+    model.fit(trainData, passenger_cat, shuffle=True, epochs=8, steps_per_epoch=891)
     
     #pre-processing Titanic test data
     df2 = load_data("../Data/test.csv")

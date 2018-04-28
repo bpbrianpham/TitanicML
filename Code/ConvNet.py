@@ -79,11 +79,16 @@ if __name__ == '__main__':
     df2 = load_data("../Data/test.csv")
     testData = df2.as_matrix(columns=["Pclass", "Sex", "Age", "SibSp", "Fare", "Parch", "Q", "S"] )
     
+    predictions = model.predict_classes(testData)
+    
+    '''
     df3 = pd.read_csv("../Data/gender_submission.csv")
     testLabel = df3.as_matrix(columns=["Survived"]).astype(float)
     test_cat = np_utils.to_categorical(testLabel)
     
     #test model
+    
     score = model.evaluate(testData, test_cat, verbose=0)
-    print('Logistic Model Test loss:', score[0])
-    print('Logistic Model Test accuracy:', score[1])
+    print('Convolutional Neural Network Test loss:', score[0])
+    print('Convolutional Neural Network Test accuracy:', score[1])
+    '''

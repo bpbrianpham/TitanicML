@@ -14,8 +14,12 @@ from keras.utils import np_utils
 import numpy as np
 import pandas as pd
 import pdb
+from IPython.display import SVG
+from keras.utils.vis_utils import model_to_dot
+from sklearn.linear_model import LogisticRegression
 
 import matplotlib.pyplot as plt
+from sklearn.linear_model import LogisticRegression
 
 def load_data(filepath):
     df = pd.read_csv(filepath)
@@ -58,19 +62,38 @@ def impute_age(cols):
 
 
 if __name__ == '__main__':
+    
     df = load_data("../Data/train.csv")
     
 #    df.drop(["Name", "PassengerId"], axis = 1, inplace=True)
     
-    trainData = df.as_matrix(columns=["Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Q", "S"] )
+    trainData = df.as_matrix(columns=["Pclass", "Sex", "Age", "SibSp", "Parch", "Q", "S"] )
     trainLabel = df.as_matrix(columns=["Survived"]).astype(float)
+    '''
+    logreg=LogisticRegression()
+    logreg.fit(trainData,trainLabel)
+    
+    df2 = load_data("../Data/test.csv")
+    testData = df2.as_matrix(columns=["Pclass", "Sex", "Age", "SibSp", "Parch", "Q", "S"] )
+    #pdb.set_trace()
+    
+    df3 = pd.read_csv("../Data/gender_submission.csv")
+    testLabel = df3.as_matrix(columns=["Survived"]).astype(float)
+    test_cat = np_utils.to_categorical(testLabel)
+    
+    prediction=logreg.predict(testData)
+    
+    score=logreg.score(testData,test_cat)
+    print(score)
+    '''
+    
     
     #pdb.set_trace()
     model = Sequential()
     #model.add(Dense(1, input_shape=(8,)))
     #model.add(Dropout(0.25))
     #model.add(Dense(2))
-    model.add(Dense(2, activation="softmax", input_shape=(8,)))
+    model.add(Dense(2, activation="softmax", input_shape=(7,)))
     #model.summary()
     #opt = SGD()
     opt = Adam()
@@ -82,15 +105,15 @@ if __name__ == '__main__':
     
     loss = history.history['loss']
     epochs = range(1, len(loss) + 1)
-    plt.plot(epochs, loss, 'bo', label='Training loss')
+    '''plt.plot(epochs, loss, 'bo', label='Training loss')
     plt.title('Training')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
     plt.show()
-    
+    '''
     df2 = load_data("../Data/test.csv")
-    testData = df2.as_matrix(columns=["Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Q", "S"] )
+    testData = df2.as_matrix(columns=["Pclass", "Sex", "Age", "SibSp", "Parch", "Q", "S"] )
     
     df3 = pd.read_csv("../Data/gender_submission.csv")
     testLabel = df3.as_matrix(columns=["Survived"]).astype(float)
@@ -99,3 +122,6 @@ if __name__ == '__main__':
     score = model.evaluate(testData, test_cat, verbose=0)
     print('Logistic Model Test loss:', score[0])
     print('Logistic Model Test accuracy:', score[1])
+    
+    #SVG(model_to_dot(model).create(prog='dot', format='svg'))
+    

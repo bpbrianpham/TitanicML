@@ -6,13 +6,14 @@ Created on Thu Apr  5 16:59:45 2018
 #from sklearn.cross_validation import StratifiedKFold
 #from sklearn.linear_model import LogisticRegression
 #from sklearn.metrics import classification_report
-from keras.models import Sequential
-from keras.layers import Dense, Activation, Dropout
-from keras.layers import Conv2D, Flatten
-from keras.optimizers import SGD, rmsprop, Adam
-from keras.utils import np_utils
 import numpy as np
+import matplotlib.pyplot as plt
 import pandas as pd
+import math
+from keras.models import Sequential
+from keras.layers import Dense, LSTM
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.metrics import mean_squared_error
 import pdb
 
 import matplotlib.pyplot as plt
@@ -29,7 +30,6 @@ def load_data(filepath):
     df["Fare"] = normalize(df["Fare"])
     #df["SibSp"] = normalize(df["SibSp"])
     
-    
     #turn embarked into 0s and 1s
     embark = pd.get_dummies(df["Embarked"], drop_first=True)
     embark.head()
@@ -37,6 +37,10 @@ def load_data(filepath):
     df.drop(["Embarked"], axis = 1, inplace = True)
     df.head()
     
+    #normalizing the dataset
+    scalar = MinMaxScaler(feature_range=(0,1))
+    df = scalar.fit_transform(df)
+        
     return df
 
 def normalize(series):
@@ -58,37 +62,31 @@ def impute_age(cols):
 
 
 if __name__ == '__main__':
+    #fix random seed for reproducibility
+    np.random.seed(11)
+    
     #pre-processing Titanic training data
     df = load_data("../Data/train.csv")
-    trainData = df.as_matrix(columns=["Pclass", "Sex", "Age", "SibSp", "Fare", "Parch", "Q", "S"] )
-    trainLabel = df.as_matrix(columns=["Survived"]).astype(float)
+    data = df.as_matrix(columns=["Pclass", "Sex", "Age", "SibSp", "Fare", "Parch", "Q", "S"] )
+    label = df.as_matrix(columns=["Survived"]).astype(float)
     
-    #pdb.set_trace()
-    model = Sequential()
-    model.add(Dense(units=6, kernel_initializer='uniform', activation='relu',input_dim=8))
-    model.add(Dropout(0.2))
-    model.add(Dense(units=6, kernel_initializer='uniform', activation='relu'))
-    model.add(Dropout(0.2))
-    model.add(Dense(units=2, kernel_initializer='uniform', activation='sigmoid'))
-    model.compile(loss="binary_crossentropy", optimizer='adam', metrics=["accuracy"])
-    
-    passenger_cat = np_utils.to_categorical(trainLabel)
-    model.fit(trainData, passenger_cat, shuffle=True, epochs=8, steps_per_epoch=891)
-    
+    '''
     #pre-processing Titanic test data
     df2 = load_data("../Data/test.csv")
     testData = df2.as_matrix(columns=["Pclass", "Sex", "Age", "SibSp", "Fare", "Parch", "Q", "S"] )
-    
-    predictions = model.predict_classes(testData)
-    
     '''
-    df3 = pd.read_csv("../Data/gender_submission.csv")
-    testLabel = df3.as_matrix(columns=["Survived"]).astype(float)
-    test_cat = np_utils.to_categorical(testLabel)
     
-    #test model
+    train_size = int(len(data) * 0.75)
+    test_size = len(data) - train_size
+    trainData, testData = data[0:train_size,:], data[train_size:len(data),:]
+    print(len(trainData), len(testData))
     
-    score = model.evaluate(testData, test_cat, verbose=0)
-    print('Convolutional Neural Network Test loss:', score[0])
-    print('Convolutional Neural Network Test accuracy:', score[1])
-    '''
+    
+    
+    
+    
+    
+    
+    
+    
+    

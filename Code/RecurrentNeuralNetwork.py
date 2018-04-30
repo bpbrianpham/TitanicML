@@ -74,13 +74,16 @@ def convert(predict):
     return predict
 
 def accuracy(predict, label):
-    correct = 0
-    for i in range(len(predict)):
-        if predict[i] == label[i]:
-            correct = correct + 1
-    
-    percent_accurate = correct / len(predict)
-    return percent_accurate
+    if len(predict) == len(label):    
+        correct = 0
+        for i in range(len(predict)):
+            if predict[i] == label[i]:
+                correct = correct + 1
+        
+        percent_accurate = correct / len(predict)
+        return percent_accurate
+    else:
+        raise ValueError("Incorrect input: input shapes do not fit.")
 
 if __name__ == '__main__':
     

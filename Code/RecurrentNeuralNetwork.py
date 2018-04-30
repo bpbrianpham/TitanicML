@@ -7,6 +7,7 @@ Created on Thu Apr  5 16:59:45 2018
 
 from keras.models import Sequential
 from keras.layers import Dense, LSTM
+from keras.utils import np_utils
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 import tensorflow as tf
@@ -65,7 +66,7 @@ def create_dataset(dataset, look_back=1):
 		dataY.append(dataset[i + look_back, 0])
 	return np.array(dataX), np.array(dataY)
 
-def convert(predict):
+def survival_convert(predict):
     for i in range(len(predict)):
         if predict[i] > 0.5:
             predict[i] = 1
@@ -131,12 +132,23 @@ if __name__ == '__main__':
     
     #print accuracy
     
-    trainPredict = convert(trainPredict)
-    testPredict = convert(testPredict)
+    trainPredict = survival_convert(trainPredict)
+    testPredict = survival_convert(testPredict)    
     
     print("Train Accuracy", accuracy(trainPredict, trainLabel))
     print("Test Accuracy", accuracy(testPredict, testLabel))
-
+    
+    
+    '''
+    #predict actual test
+    #preprocess tester
+    df2 =  load_data("../Data/test.csv")
+    Testing_data = df2.as_matrix(columns=["Pclass", "Sex", "Age", "SibSp", "Fare", "Parch", "Q", "S"] )
+    #Testing_label = df2.as_matrix(columns=["Survived"]).astype(float)
+    Testing_data = np.reshape(Testing_data, (Testing_data.shape[0], 1, Testing_data.shape[1]))
+    model.reset_states()
+    testing_data_predict = model.predict(Testing_data, batch_size=batch_size)
+    '''
         
     # invert predictions
     

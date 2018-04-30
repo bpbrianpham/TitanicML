@@ -24,7 +24,9 @@ def load_data(filepath):
     df["Fare"] = normalize(df["Fare"])
     #df["SibSp"] = normalize(df["SibSp"])
     df["Age"] = normalize(df["Age"])
-    
+    df.drop(["Name"], axis = 1, inplace = True)
+    df.drop(["Ticket"], axis = 1, inplace = True)
+    df.drop(["Cabin"], axis = 1, inplace = True)
     
     
     #turn embarked into 0s and 1s
@@ -33,7 +35,9 @@ def load_data(filepath):
     df = pd.concat([df, embark], axis = 1)
     df.drop(["Embarked"], axis = 1, inplace = True)
     df.head()
-        
+    
+    
+    
     return df
 
 def normalize(series):
@@ -61,11 +65,32 @@ def create_dataset(dataset, look_back=1):
 		dataY.append(dataset[i + look_back, 0])
 	return np.array(dataX), np.array(dataY)
 
+def convert(predict):
+    for i in range(len(predict)):
+        if predict[i] > 0.5:
+            predict[i] = 1
+        else:
+            predict[i] = 0
+    return predict
+
+def accuracy(predict, label):
+    correct = 0
+    for i in range(len(predict)):
+        if predict[i] == label[i]:
+            correct = correct + 1
+    
+    percent_accurate = correct / len(predict)
+    return percent_accurate
+
 if __name__ == '__main__':
-    scaler = MinMaxScaler(feature_range=(0, 1))
+    
     #load data
     # normalize the dataset    
     df = load_data("../Data/train.csv")
+    
+    #scaler = MinMaxScaler(feature_range=(0, 1))
+    #df = scaler.fit_transform(df)
+    
     data = df.as_matrix(columns=["Pclass", "Sex", "Age", "SibSp", "Fare", "Parch", "Q", "S"] )
     label = df.as_matrix(columns=["Survived"]).astype(float)
     
@@ -86,21 +111,38 @@ if __name__ == '__main__':
     testData = np.reshape(testData, (testData.shape[0], 1, testData.shape[1]))
     
     # create and fit the LSTM network
+    batch_size = 1
     model = Sequential()
-    model.add(LSTM(4, input_shape=(1, look_back)))
+    model.add(LSTM(32, batch_input_shape=(batch_size, 1, look_back), stateful=True, return_sequences=True))
+    model.add(LSTM(32, batch_input_shape=(batch_size, 1, look_back), stateful=True))
     model.add(Dense(1))
     model.compile(loss='mean_squared_error', optimizer='adam')
-    model.fit(trainData, trainLabel, epochs=10, batch_size=1, verbose=2)
+    for i in range(10):
+        model.fit(trainData, trainLabel, epochs=1, batch_size=batch_size, verbose=2, shuffle=False)
+        model.reset_states()
      
     # make predictions
-    trainPredict = model.predict(trainData)
-    testPredict = model.predict(testData)
+    trainPredict = model.predict(trainData, batch_size=batch_size)
+    model.reset_states()
+    testPredict = model.predict(testData,  batch_size=batch_size)
     
+    #print accuracy
+    
+    trainPredict = convert(trainPredict)
+    testPredict = convert(testPredict)
+    
+    print("Train Accuracy", accuracy(trainPredict, trainLabel))
+    print("Test Accuracy", accuracy(testPredict, testLabel))
+
+        
     # invert predictions
+    
+    '''
     trainPredict = scaler.inverse_transform(trainPredict)
     trainLabel = scaler.inverse_transform([trainLabel])
     testPredict = scaler.inverse_transform(testPredict)
     testLabel = scaler.inverse_transform([testLabel])
+    '''
     
     # calculate root mean squared error
     

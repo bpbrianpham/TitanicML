@@ -122,7 +122,7 @@ if __name__ == '__main__':
     model.add(Dense(1))
     model.compile(loss='mean_squared_error', optimizer='adam')
     for i in range(10):
-        model.fit(trainData, trainLabel, epochs=1, batch_size=batch_size, verbose=2, shuffle=False)
+        model.fit(trainData, trainLabel, epochs=1, batch_size=batch_size, verbose=2, shuffle=True)
         model.reset_states()
      
     # make predictions
@@ -131,9 +131,9 @@ if __name__ == '__main__':
     testPredict = model.predict(testData,  batch_size=batch_size)
     
     #print accuracy
-    
+         
     trainPredict = survival_convert(trainPredict)
-    testPredict = survival_convert(testPredict)    
+    testPredict = survival_convert(testPredict)
     
     print("Train Accuracy", accuracy(trainPredict, trainLabel))
     print("Test Accuracy", accuracy(testPredict, testLabel))

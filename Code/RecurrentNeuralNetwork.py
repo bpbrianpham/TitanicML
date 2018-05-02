@@ -12,6 +12,7 @@ from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 import tensorflow as tf
 import pandas as pd
+import pdb
 
 def load_data(filepath):
     df = pd.read_csv(filepath)
@@ -23,6 +24,9 @@ def load_data(filepath):
     df["Age"] = df[["Age", "Pclass"]].apply(impute_age, axis=1)
     #df["Age"] = normalize(df["Age"])
     df["Fare"] = normalize(df["Fare"])
+    fare_mean=df2["Fare"].mean()
+    df2["Fare"].fillna(fare_mean, inplace =True)
+   
     #df["SibSp"] = normalize(df["SibSp"])
     df["Age"] = normalize(df["Age"])
     df.drop(["Name"], axis = 1, inplace = True)
@@ -79,15 +83,14 @@ def accuracy(predict, label):
         correct = 0
         for i in range(len(predict)):
             if predict[i] == label[i]:
-                correct = correct + 1
-        
+                correct = correct + 1        
         percent_accurate = correct / len(predict)
         return percent_accurate
     else:
         raise ValueError("Incorrect input: input shapes do not fit.")
 
 if __name__ == '__main__':
-    
+    #pdb.set_trace()
     #load data
     # normalize the dataset    
     df = load_data("../Data/train.csv")
@@ -139,7 +142,7 @@ if __name__ == '__main__':
     print("Test Accuracy", accuracy(testPredict, testLabel))
     
     
-    '''
+    
     #predict actual test
     #preprocess tester
     df2 =  load_data("../Data/test.csv")
@@ -148,7 +151,7 @@ if __name__ == '__main__':
     Testing_data = np.reshape(Testing_data, (Testing_data.shape[0], 1, Testing_data.shape[1]))
     model.reset_states()
     testing_data_predict = model.predict(Testing_data, batch_size=batch_size)
-    '''
+    
         
     # invert predictions
     

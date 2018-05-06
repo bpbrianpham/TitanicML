@@ -26,8 +26,8 @@ def load_data(filepath):
     #df["SibSp"] = normalize(df["SibSp"])
     df["Age"] = normalize(df["Age"])
     df.drop(["Name"], axis = 1, inplace = True)
-    df.drop(["Ticket"], axis = 1, inplace = True)
-    df.drop(["Cabin"], axis = 1, inplace = True)
+    #df.drop(["Ticket"], axis = 1, inplace = True)
+    #df.drop(["Cabin"], axis = 1, inplace = True)
     
     
     #turn embarked into 0s and 1s
@@ -129,6 +129,9 @@ if __name__ == '__main__':
     trainPredict = model.predict(trainData, batch_size=batch_size)
     model.reset_states()
     testPredict = model.predict(testData,  batch_size=batch_size)
+    model.reset_states()
+    
+
     
     #print accuracy
          
@@ -139,16 +142,14 @@ if __name__ == '__main__':
     print("Test Accuracy", accuracy(testPredict, testLabel))
     
     
-    '''
     #predict actual test
     #preprocess tester
     df2 =  load_data("../Data/test.csv")
     Testing_data = df2.as_matrix(columns=["Pclass", "Sex", "Age", "SibSp", "Fare", "Parch", "Q", "S"] )
     #Testing_label = df2.as_matrix(columns=["Survived"]).astype(float)
     Testing_data = np.reshape(Testing_data, (Testing_data.shape[0], 1, Testing_data.shape[1]))
-    model.reset_states()
     testing_data_predict = model.predict(Testing_data, batch_size=batch_size)
-    '''
+
         
     # invert predictions
     

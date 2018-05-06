@@ -28,10 +28,13 @@ def load_data(filepath):
     df.replace("male", 1, inplace=True)
     df.replace("female", 0, inplace=True)
     
-    df["Age"] = df[["Age", "Pclass"]].apply(impute_age, axis=1)
+    df["Age"] = df[["Age", "Pclass"]].apply(fill_age, axis=1)
     df["Age"] = normalize(df["Age"])
-    #df["Fare"] = normalize(df["Fare"])
-    df["SibSp"] = normalize(df["SibSp"])
+    df["Fare"].fillna(df["Fare"].mean(), inplace =True)
+    df["Fare"] = normalize(df["Fare"])
+    df["Embarked"].fillna(df["Embarked"].mode(), inplace=True)
+    
+    #create categories for each cabin letter
     df['Cabin_letter']=df['Cabin'].str[:1]
     df['Cabin_letter A'] = np.where(df['Cabin_letter']=='A',1,0)
     df['Cabin_letter B'] = np.where(df['Cabin_letter']=='B',1,0)
@@ -39,42 +42,22 @@ def load_data(filepath):
     df['Cabin_letter D'] = np.where(df['Cabin_letter']=='D',1,0)
     df['Cabin_letter E'] = np.where(df['Cabin_letter']=='E',1,0)
     df['Cabin_letter noCabin'] = np.where(df['Cabin_letter'].isnull(),1,0)
-    #Cabin = pd.get_dummies(df["Cabin"], drop_first=True)
-    #Cabin_letter = pd.get_dummies(df["Cabin_letter"], drop_first=True)
-    #pdb.set_trace()
     
     #turn embarked into 0s and 1s
     embark = pd.get_dummies(df['Embarked'],prefix='Embarked ',drop_first=True)
-    #cabin = pd.get_dummies(df['Cabin'],prefix='cabin ',drop_first=True)
-    #cabin_letter= pd.get_dummies(df['Cabin_letter'],prefix='cabin_letter ',drop_first=True)
     
     df.drop(["Embarked"], axis = 1, inplace = True)
     df.drop(["Cabin"], axis = 1, inplace = True)
     df.drop(["Cabin_letter"], axis = 1, inplace = True)
-    #pdb.set_trace()
     datas=[df,embark]
     df=pd.concat(datas, axis=1)
-    #embark.head()
-    #df = embark
     
-    #df.head()
-    
-    '''Cabin.head()
-    df = pd.concat([df, Cabin], axis = 1)
-    df.drop(["Cabin"], axis = 1, inplace = True)
-    df.head()
-    
-    Cabin_letter.head()
-    df = pd.concat([df, Cabin_letter], axis = 1)
-    df.head()
-    '''
-   # df = df[~df.index.duplicated()]
     return df
 
 def normalize(series):
     return (series - series.min()) / (series.max() - series.min())
 
-def impute_age(cols):
+def fill_age(cols):
     Age = cols[0]
     Pclass = cols[1]
     
@@ -93,10 +76,8 @@ if __name__ == '__main__':
     #pdb.set_trace()
     df = load_data("../Data/train.csv")
     
-    
-    
     trainLabel = df.as_matrix(columns=["Survived"]).astype(float)
-    df.drop(["Name", "PassengerId","Fare","Ticket","Survived"], axis = 1, inplace=True)
+    df.drop(["Name", "PassengerId","Ticket","Survived"], axis = 1, inplace=True)
     trainData = df.as_matrix()
     '''
     logreg=LogisticRegression()
@@ -122,7 +103,7 @@ if __name__ == '__main__':
     #model.add(Dense(1, input_shape=(8,)))
     #model.add(Dropout(0.25))
     #model.add(Dense(2))
-    model.add(Dense(2, activation="softmax", input_shape=(13,)))
+    model.add(Dense(2, activation="softmax", input_shape=(14,)))
     #model.summary()
     #opt = SGD()
     opt = Adam()
@@ -142,16 +123,18 @@ if __name__ == '__main__':
     plt.show()
     '''
     df2 = load_data("../Data/test.csv")
-    df2.drop(["Name", "PassengerId","Fare","Ticket"], axis = 1, inplace=True)
+    df2.drop(["Name", "PassengerId","Ticket"], axis = 1, inplace=True)
     testData = df2.as_matrix()
     
     df3 = pd.read_csv("../Data/gender_submission.csv")
     testLabel = df3.as_matrix(columns=["Survived"]).astype(float)
     test_cat = np_utils.to_categorical(testLabel)
-    
+
+"""
     score = model.evaluate(testData, test_cat, verbose=0)
     print('Logistic Model Test loss:', score[0])
     print('Logistic Model Test accuracy:', score[1])
     
     #SVG(model_to_dot(model).create(prog='dot', format='svg'))
+"""
     

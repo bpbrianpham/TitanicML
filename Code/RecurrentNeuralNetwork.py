@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
 """
 Created on Thu Apr  5 16:59:45 2018
-
 @author: Andrew, Brian, Matthew
 """
 
@@ -12,6 +10,7 @@ from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 import tensorflow as tf
 import pandas as pd
+import pdb
 
 def load_data(filepath):
     df = pd.read_csv(filepath)
@@ -23,11 +22,14 @@ def load_data(filepath):
     df["Age"] = df[["Age", "Pclass"]].apply(impute_age, axis=1)
     #df["Age"] = normalize(df["Age"])
     df["Fare"] = normalize(df["Fare"])
+    fare_mean=df["Fare"].mean()
+    df["Fare"].fillna(fare_mean, inplace =True)
+   
     #df["SibSp"] = normalize(df["SibSp"])
     df["Age"] = normalize(df["Age"])
     df.drop(["Name"], axis = 1, inplace = True)
-    #df.drop(["Ticket"], axis = 1, inplace = True)
-    #df.drop(["Cabin"], axis = 1, inplace = True)
+    df.drop(["Ticket"], axis = 1, inplace = True)
+    df.drop(["Cabin"], axis = 1, inplace = True)
     
     
     #turn embarked into 0s and 1s
@@ -79,15 +81,14 @@ def accuracy(predict, label):
         correct = 0
         for i in range(len(predict)):
             if predict[i] == label[i]:
-                correct = correct + 1
-        
+                correct = correct + 1        
         percent_accurate = correct / len(predict)
         return percent_accurate
     else:
         raise ValueError("Incorrect input: input shapes do not fit.")
 
 if __name__ == '__main__':
-    
+    #pdb.set_trace()
     #load data
     # normalize the dataset    
     df = load_data("../Data/train.csv")
@@ -129,9 +130,6 @@ if __name__ == '__main__':
     trainPredict = model.predict(trainData, batch_size=batch_size)
     model.reset_states()
     testPredict = model.predict(testData,  batch_size=batch_size)
-    model.reset_states()
-    
-
     
     #print accuracy
          
@@ -142,14 +140,16 @@ if __name__ == '__main__':
     print("Test Accuracy", accuracy(testPredict, testLabel))
     
     
+    
     #predict actual test
     #preprocess tester
     df2 =  load_data("../Data/test.csv")
     Testing_data = df2.as_matrix(columns=["Pclass", "Sex", "Age", "SibSp", "Fare", "Parch", "Q", "S"] )
     #Testing_label = df2.as_matrix(columns=["Survived"]).astype(float)
     Testing_data = np.reshape(Testing_data, (Testing_data.shape[0], 1, Testing_data.shape[1]))
+    model.reset_states()
     testing_data_predict = model.predict(Testing_data, batch_size=batch_size)
-
+    
         
     # invert predictions
     
@@ -167,4 +167,3 @@ if __name__ == '__main__':
     # shift test predictions for plotting
     
     # plot baseline and predictions
-

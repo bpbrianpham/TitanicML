@@ -153,6 +153,7 @@ if __name__ == '__main__':
     model.reset_states()
     testing_data_predict = model.predict(Testing_data, batch_size=batch_size)
     
+    model.summary()
         
     # invert predictions
     

@@ -1,5 +1,7 @@
+# -*- coding: utf-8 -*-
 """
 Created on Thu Apr  5 16:59:45 2018
+
 @author: Andrew, Brian, Matthew
 """
 
@@ -19,27 +21,29 @@ def load_data(filepath):
     df.replace("male", 1, inplace=True)
     df.replace("female", 0, inplace=True)
     
-    df["Age"] = df[["Age", "Pclass"]].apply(impute_age, axis=1)
-    #df["Age"] = normalize(df["Age"])
-    df["Fare"] = normalize(df["Fare"])
-    fare_mean=df["Fare"].mean()
-    df["Fare"].fillna(fare_mean, inplace =True)
-   
-    #df["SibSp"] = normalize(df["SibSp"])
+    df["Age"] = df[["Age", "Pclass"]].apply(fill_age, axis=1)
     df["Age"] = normalize(df["Age"])
-    df.drop(["Name"], axis = 1, inplace = True)
-    df.drop(["Ticket"], axis = 1, inplace = True)
-    df.drop(["Cabin"], axis = 1, inplace = True)
+    df["Fare"].fillna(df["Fare"].mean(), inplace =True)
+    df["Fare"] = normalize(df["Fare"])
+    df["Embarked"].fillna(df["Embarked"].mode(), inplace=True)
     
+    #create categories for each cabin letter
+    df['Cabin_letter']=df['Cabin'].str[:1]
+    df['Cabin_letter A'] = np.where(df['Cabin_letter']=='A',1,0)
+    df['Cabin_letter B'] = np.where(df['Cabin_letter']=='B',1,0)
+    df['Cabin_letter C'] = np.where(df['Cabin_letter']=='C',1,0)
+    df['Cabin_letter D'] = np.where(df['Cabin_letter']=='D',1,0)
+    df['Cabin_letter E'] = np.where(df['Cabin_letter']=='E',1,0)
+    df['Cabin_letter noCabin'] = np.where(df['Cabin_letter'].isnull(),1,0)
     
     #turn embarked into 0s and 1s
-    embark = pd.get_dummies(df["Embarked"], drop_first=True)
-    embark.head()
-    df = pd.concat([df, embark], axis = 1)
+    embark = pd.get_dummies(df['Embarked'],prefix='Embarked ',drop_first=True)
+    
     df.drop(["Embarked"], axis = 1, inplace = True)
-    df.head()
-    
-    
+    df.drop(["Cabin"], axis = 1, inplace = True)
+    df.drop(["Cabin_letter"], axis = 1, inplace = True)
+    datas=[df,embark]
+    df=pd.concat(datas, axis=1)
     
     return df
 
@@ -95,21 +99,21 @@ if __name__ == '__main__':
     
     #scaler = MinMaxScaler(feature_range=(0, 1))
     #df = scaler.fit_transform(df)
-    
-    data = df.as_matrix(columns=["Pclass", "Sex", "Age", "SibSp", "Fare", "Parch", "Q", "S"] )
     label = df.as_matrix(columns=["Survived"]).astype(float)
+    df.drop(["Name", "PassengerId","Ticket","Survived"], axis = 1, inplace=True)
+    data = df.as_matrix()
     
     # split into train and test sets
-    train_size = int(len(data) * 0.67)
+    train_size = int(len(data) * 0.75)
     test_size = len(data) - train_size
     trainData, testData = data[0:train_size,:], data[train_size:len(data),:]
     
-    train_size = int(len(label) * 0.67)
+    train_size = int(len(label) * 0.75)
     test_size = len(label) - train_size
     trainLabel, testLabel = label[0:train_size,:], label[train_size:len(label),:]
     
     # reshape into X=t and Y=t+1
-    look_back = 8    
+    look_back = 14    
     
     # reshape input to be [samples, time steps, features]
     trainData = np.reshape(trainData, (trainData.shape[0], 1, trainData.shape[1]))
@@ -122,7 +126,7 @@ if __name__ == '__main__':
     model.add(LSTM(32, batch_input_shape=(batch_size, 1, look_back), stateful=True))
     model.add(Dense(1))
     model.compile(loss='mean_squared_error', optimizer='adam')
-    for i in range(10):
+    for i in range(15):
         model.fit(trainData, trainLabel, epochs=1, batch_size=batch_size, verbose=2, shuffle=True)
         model.reset_states()
      
@@ -138,15 +142,14 @@ if __name__ == '__main__':
     
     print("Train Accuracy", accuracy(trainPredict, trainLabel))
     print("Test Accuracy", accuracy(testPredict, testLabel))
-    
-    
-    
-    #predict actual test
-    #preprocess tester
+
+    #preprocess kaggle test data
     df2 =  load_data("../Data/test.csv")
-    Testing_data = df2.as_matrix(columns=["Pclass", "Sex", "Age", "SibSp", "Fare", "Parch", "Q", "S"] )
-    #Testing_label = df2.as_matrix(columns=["Survived"]).astype(float)
+    df2.drop(["Name", "PassengerId","Ticket"], axis = 1, inplace=True)
+    Testing_data = df2.as_matrix()
     Testing_data = np.reshape(Testing_data, (Testing_data.shape[0], 1, Testing_data.shape[1]))
+    
+    #predict kaggle test data
     model.reset_states()
     testing_data_predict = model.predict(Testing_data, batch_size=batch_size)
     
@@ -167,3 +170,4 @@ if __name__ == '__main__':
     # shift test predictions for plotting
     
     # plot baseline and predictions
+

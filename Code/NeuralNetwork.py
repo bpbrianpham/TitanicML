@@ -91,10 +91,10 @@ if __name__ == '__main__':
     
     #pdb.set_trace()
     model = Sequential()
-    model.add(Dense(units=6, kernel_initializer='uniform', activation='relu',input_dim=14))
-    model.add(Dropout(0.2))
-    model.add(Dense(units=6, kernel_initializer='uniform', activation='relu'))
-    model.add(Dropout(0.2))
+    model.add(Dense(units=14, kernel_initializer='uniform', activation='relu',input_dim=14))
+    model.add(Dropout(0.1))
+    model.add(Dense(units=14, kernel_initializer='uniform', activation='relu'))
+    model.add(Dropout(0.1))
     model.add(Dense(units=2, kernel_initializer='uniform', activation='sigmoid'))
     model.compile(loss="mean_squared_error", optimizer='adam', metrics=["accuracy"])
     

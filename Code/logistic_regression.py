@@ -73,55 +73,48 @@ def fill_age(cols):
 
 
 if __name__ == '__main__':
-    #pdb.set_trace()
     df = load_data("../Data/train.csv")
     
-    trainLabel = df.as_matrix(columns=["Survived"]).astype(float)
+    label = df.as_matrix(columns=["Survived"]).astype(float)
     df.drop(["Name", "PassengerId","Ticket","Survived"], axis = 1, inplace=True)
-    trainData = df.as_matrix()
-    '''
-    logreg=LogisticRegression()
-    logreg.fit(trainData,trainLabel)
+    data = df.as_matrix()
     
-    df2 = load_data("../Data/test.csv")
-    testData = df2.as_matrix(columns=["Pclass", "Sex", "Age", "SibSp", "Parch", "Q", "S"] )
-    #pdb.set_trace()
+    # split into train and test sets
+    train_size = int(len(data) * 0.75)
+    test_size = len(data) - train_size
+    trainData, testData = data[0:train_size,:], data[train_size:len(data),:]
     
-    df3 = pd.read_csv("../Data/gender_submission.csv")
-    testLabel = df3.as_matrix(columns=["Survived"]).astype(float)
-    test_cat = np_utils.to_categorical(testLabel)
+    train_size = int(len(label) * 0.75)
+    test_size = len(label) - train_size
+    trainLabel, testLabel = label[0:train_size,:], label[train_size:len(label),:]
     
-    prediction=logreg.predict(testData)
-    
-    score=logreg.score(testData,test_cat)
-    print(score)
-    '''
-    
-    
-    
+    #build model
     model = Sequential()
-    #model.add(Dense(1, input_shape=(8,)))
-    #model.add(Dropout(0.25))
-    #model.add(Dense(2))
     model.add(Dense(2, activation="softmax", input_shape=(14,)))
-    #model.summary()
-    #opt = SGD()
     opt = Adam()
-    #opt = rmsprop(lr=0.0001, decay=1e-4)
     
-    model.compile(loss="binary_crossentropy", optimizer=opt, metrics=["accuracy"])
+    #start training model
+    model.compile(loss="mean_squared_error", optimizer=opt, metrics=["accuracy"])
     passenger_cat = np_utils.to_categorical(trainLabel)
-    history = model.fit(trainData, passenger_cat, shuffle=True, epochs=8, steps_per_epoch=891)
+    history = model.fit(trainData, passenger_cat, shuffle=True, epochs=12, steps_per_epoch=712)
+    #loss = history.history['loss']
+    #epochs = range(1, len(loss) + 1)
     
-    loss = history.history['loss']
-    epochs = range(1, len(loss) + 1)
-    '''plt.plot(epochs, loss, 'bo', label='Training loss')
+    #test validation set
+    test_cat = np_utils.to_categorical(testLabel)
+    score = model.evaluate(testData, test_cat, verbose=0)
+    print('Logistic Model Test loss:', score[0])
+    print('Logistic Model Test accuracy:', score[1])
+
+"""    
+    plt.plot(epochs, loss, 'bo', label='Training loss')
     plt.title('Training')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
     plt.show()
-    '''
+
+    
     df2 = load_data("../Data/test.csv")
     df2.drop(["Name", "PassengerId","Ticket"], axis = 1, inplace=True)
     testData = df2.as_matrix()
@@ -130,7 +123,6 @@ if __name__ == '__main__':
     testLabel = df3.as_matrix(columns=["Survived"]).astype(float)
     test_cat = np_utils.to_categorical(testLabel)
 
-"""
     score = model.evaluate(testData, test_cat, verbose=0)
     print('Logistic Model Test loss:', score[0])
     print('Logistic Model Test accuracy:', score[1])

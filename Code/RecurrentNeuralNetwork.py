@@ -21,7 +21,7 @@ def load_data(filepath):
     df.replace("male", 1, inplace=True)
     df.replace("female", 0, inplace=True)
     
-    df["Age"] = df[["Age", "Pclass"]].apply(fill_age, axis=1)
+    df["Age"] = df[["Age", "Pclass"]].apply(impute_age, axis=1)
     df["Age"] = normalize(df["Age"])
     df["Fare"].fillna(df["Fare"].mean(), inplace =True)
     df["Fare"] = normalize(df["Fare"])

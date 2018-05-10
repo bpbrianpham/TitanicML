@@ -1,7 +1,7 @@
+
 # -*- coding: utf-8 -*-
 """
 Created on Sat Apr 28 18:18:52 2018
-
 @author: Brian
 """
 
@@ -99,7 +99,7 @@ if __name__ == '__main__':
     model.compile(loss="mean_squared_error", optimizer='adam', metrics=["accuracy"])
     
     passenger_cat = np_utils.to_categorical(trainLabel)
-    model.fit(trainData, passenger_cat, shuffle=True, epochs=8, steps_per_epoch=891)
+    model.fit(trainData, passenger_cat, shuffle=True, epochs=8, steps_per_epoch=train_size)
     
     test_cat = np_utils.to_categorical(testLabel)
     score = model.evaluate(testData, test_cat, verbose=0)

@@ -8,14 +8,9 @@ Created on Thu Apr  5 16:59:45 2018
 #from sklearn.linear_model import LogisticRegression
 #from sklearn.metrics import classification_report
 from keras.models import Sequential
-from keras.layers import Dense, Activation, Dropout
-from keras.optimizers import SGD, rmsprop, Adam
 from keras.utils import np_utils
 import numpy as np
 import pandas as pd
-import pdb
-from IPython.display import SVG
-from keras.utils.vis_utils import model_to_dot
 from sklearn.linear_model import LogisticRegression
 
 import matplotlib.pyplot as plt
@@ -96,7 +91,7 @@ if __name__ == '__main__':
     #start training model
     model.compile(loss="mean_squared_error", optimizer=opt, metrics=["accuracy"])
     passenger_cat = np_utils.to_categorical(trainLabel)
-    history = model.fit(trainData, passenger_cat, shuffle=True, epochs=12, steps_per_epoch=712)
+    history = model.fit(trainData, passenger_cat, shuffle=True, epochs=12, steps_per_epoch=train_size)
     #loss = history.history['loss']
     #epochs = range(1, len(loss) + 1)
     

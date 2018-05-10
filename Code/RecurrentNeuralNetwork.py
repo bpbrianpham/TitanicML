@@ -122,8 +122,8 @@ if __name__ == '__main__':
     # create and fit the LSTM network
     batch_size = 1
     model = Sequential()
-    model.add(LSTM(32, batch_input_shape=(batch_size, 1, look_back), stateful=True, return_sequences=True))
-    model.add(LSTM(32, batch_input_shape=(batch_size, 1, look_back), stateful=True))
+    model.add(LSTM(14, batch_input_shape=(batch_size, 1, look_back), stateful=True, return_sequences=True))
+    model.add(LSTM(14, batch_input_shape=(batch_size, 1, look_back), stateful=True))
     model.add(Dense(1))
     model.compile(loss='mean_squared_error', optimizer='adam')
     for i in range(15):

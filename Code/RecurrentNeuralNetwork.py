@@ -137,11 +137,11 @@ if __name__ == '__main__':
     
     #print accuracy
          
-    trainNewPredict = survival_convert(trainPredict)
-    testNewPredict = survival_convert(testPredict)
+    trainPredict = survival_convert(trainPredict)
+    testPredict = survival_convert(testPredict)
     
-    print("Train Accuracy", accuracy(trainNewPredict, trainLabel))
-    print("Test Accuracy", accuracy(testNewPredict, testLabel))
+    print("Train Accuracy", accuracy(trainPredict, trainLabel))
+    print("Test Accuracy", accuracy(testPredict, testLabel))
 
     #preprocess kaggle test data
     df2 =  load_data("../Data/test.csv")

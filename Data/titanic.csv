@@ -1,3 +1,5 @@
 PassengerId,Survived,Pclass,Name,Sex,Age,SibSp,Parch,Ticket,Fare,Cabin,Embarked
 1,0,3,"Dawson, Jack",male,23,0,0,,0,G60,S
 2,1,1,"DeWitt Bukater, Rose",female,17,0,1,,150,B56,S
+3,0,2,Cal,male,20,0,0,,150,A10,Q
+4,1,1,James,male,19,0,0,,2,G59,C

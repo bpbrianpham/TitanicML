@@ -137,11 +137,11 @@ if __name__ == '__main__':
     
     #print accuracy
          
-    trainPredict = survival_convert(trainPredict)
-    testPredict = survival_convert(testPredict)
+    trainNewPredict = survival_convert(trainPredict)
+    testNewPredict = survival_convert(testPredict)
     
-    print("Train Accuracy", accuracy(trainPredict, trainLabel))
-    print("Test Accuracy", accuracy(testPredict, testLabel))
+    print("Train Accuracy", accuracy(trainNewPredict, trainLabel))
+    print("Test Accuracy", accuracy(testNewPredict, testLabel))
 
     #preprocess kaggle test data
     df2 =  load_data("../Data/test.csv")
@@ -155,20 +155,12 @@ if __name__ == '__main__':
     
     model.summary()
         
-    # invert predictions
+   
+    #Jack and Rose Predictions
+    JackRose = load_data("../Data/titanic.csv")
     
-    '''
-    trainPredict = scaler.inverse_transform(trainPredict)
-    trainLabel = scaler.inverse_transform([trainLabel])
-    testPredict = scaler.inverse_transform(testPredict)
-    testLabel = scaler.inverse_transform([testLabel])
-    '''
-    
-    # calculate root mean squared error
-    
-    # shift train predictions for plotting
-    
-    # shift test predictions for plotting
-    
-    # plot baseline and predictions
-
+    JRlabel = JackRose.as_matrix(columns=["Survived"]).astype(float)
+    JackRose.drop(["Name", "PassengerId","Ticket","Survived"], axis = 1, inplace=True)
+    JRData = JackRose.as_matrix()
+    JRData = np.reshape(JRData, (JRData.shape[0], 1, JRData.shape[1]))
+    JRPredict = model.predict(JRData, batch_size=batch_size)

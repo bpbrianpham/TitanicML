@@ -4,17 +4,12 @@ Created on Thu Apr  5 16:59:45 2018
 
 @author: Andrew, Brian, Matthew
 """
-#from sklearn.cross_validation import StratifiedKFold
-#from sklearn.linear_model import LogisticRegression
-#from sklearn.metrics import classification_report
+
 from keras.models import Sequential
 from keras.utils import np_utils
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
-
-import matplotlib.pyplot as plt
-from sklearn.linear_model import LogisticRegression
+from keras.layers import Dense
 
 def load_data(filepath):
     df = pd.read_csv(filepath)
@@ -86,42 +81,15 @@ if __name__ == '__main__':
     #build model
     model = Sequential()
     model.add(Dense(2, activation="softmax", input_shape=(14,)))
-    opt = Adam()
     
     #start training model
-    model.compile(loss="mean_squared_error", optimizer=opt, metrics=["accuracy"])
+    model.compile(loss="mean_squared_error", optimizer="Adam", metrics=["accuracy"])
     passenger_cat = np_utils.to_categorical(trainLabel)
     history = model.fit(trainData, passenger_cat, shuffle=True, epochs=12, steps_per_epoch=train_size)
-    #loss = history.history['loss']
-    #epochs = range(1, len(loss) + 1)
     
     #test validation set
     test_cat = np_utils.to_categorical(testLabel)
     score = model.evaluate(testData, test_cat, verbose=0)
     print('Logistic Model Test loss:', score[0])
     print('Logistic Model Test accuracy:', score[1])
-
-"""    
-    plt.plot(epochs, loss, 'bo', label='Training loss')
-    plt.title('Training')
-    plt.xlabel('Epochs')
-    plt.ylabel('Loss')
-    plt.legend()
-    plt.show()
-
-    
-    df2 = load_data("../Data/test.csv")
-    df2.drop(["Name", "PassengerId","Ticket"], axis = 1, inplace=True)
-    testData = df2.as_matrix()
-    
-    df3 = pd.read_csv("../Data/gender_submission.csv")
-    testLabel = df3.as_matrix(columns=["Survived"]).astype(float)
-    test_cat = np_utils.to_categorical(testLabel)
-
-    score = model.evaluate(testData, test_cat, verbose=0)
-    print('Logistic Model Test loss:', score[0])
-    print('Logistic Model Test accuracy:', score[1])
-    
-    #SVG(model_to_dot(model).create(prog='dot', format='svg'))
-"""
     

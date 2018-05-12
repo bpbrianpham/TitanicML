@@ -10,17 +10,13 @@ Created on Sat Apr 28 18:18:52 2018
 Created on Thu Apr  5 16:59:45 2018
 @author: Andrew, Brian, Matthew
 """
-#from sklearn.cross_validation import StratifiedKFold
-#from sklearn.linear_model import LogisticRegression
-#from sklearn.metrics import classification_report
+
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.utils import np_utils
 import numpy as np
 import pandas as pd
-import pdb
 
-import matplotlib.pyplot as plt
 
 def load_data(filepath):
     df = pd.read_csv(filepath)
@@ -89,7 +85,6 @@ if __name__ == '__main__':
     test_size = len(label) - train_size
     trainLabel, testLabel = label[0:train_size,:], label[train_size:len(label),:]
     
-    #pdb.set_trace()
     model = Sequential()
     model.add(Dense(units=14, kernel_initializer='uniform', activation='relu',input_dim=14))
     model.add(Dropout(0.1))

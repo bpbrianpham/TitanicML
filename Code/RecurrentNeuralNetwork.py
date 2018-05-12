@@ -7,12 +7,8 @@ Created on Thu Apr  5 16:59:45 2018
 
 from keras.models import Sequential
 from keras.layers import Dense, LSTM
-from keras.utils import np_utils
-from sklearn.preprocessing import MinMaxScaler
 import numpy as np
-import tensorflow as tf
 import pandas as pd
-import pdb
 
 def load_data(filepath):
     df = pd.read_csv(filepath)
@@ -92,13 +88,10 @@ def accuracy(predict, label):
         raise ValueError("Incorrect input: input shapes do not fit.")
 
 if __name__ == '__main__':
-    #pdb.set_trace()
     #load data
     # normalize the dataset    
     df = load_data("../Data/train.csv")
     
-    #scaler = MinMaxScaler(feature_range=(0, 1))
-    #df = scaler.fit_transform(df)
     label = df.as_matrix(columns=["Survived"]).astype(float)
     df.drop(["Name", "PassengerId","Ticket","Survived"], axis = 1, inplace=True)
     data = df.as_matrix()
@@ -152,8 +145,6 @@ if __name__ == '__main__':
     #predict kaggle test data
     model.reset_states()
     testing_data_predict = model.predict(Testing_data, batch_size=batch_size)
-    
-    model.summary()
         
    
     #Jack and Rose Predictions
